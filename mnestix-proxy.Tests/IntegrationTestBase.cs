@@ -6,9 +6,10 @@ using mnestix_proxy.Middleware;
 
 namespace mnestix_proxy.Tests
 {
-    public class IntegrationTestBase(string downstreamUrl) : WebApplicationFactory<Program>
+    public class IntegrationTestBase(string downstreamUrl, IDictionary<string, string>? customSettings = null) : WebApplicationFactory<Program>
     {
         private readonly string _downstreamUrl = downstreamUrl;
+        private readonly IDictionary<string, string>? _customSettings = customSettings;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
@@ -21,6 +22,15 @@ namespace mnestix_proxy.Tests
                     { "ReverseProxy:Clusters:aasRepoCluster:Destinations:destination1:Address", _downstreamUrl },
                     { "ReverseProxy:Clusters:submodelRepoCluster:Destinations:destination1:Address", _downstreamUrl },
                 };
+
+                if (_customSettings != null)
+                {
+                    foreach (var kvp in _customSettings)
+                    {
+                        inMemorySettings[kvp.Key] = kvp.Value;
+                    }
+                }
+
                 config.AddInMemoryCollection(inMemorySettings);
             });
         }
