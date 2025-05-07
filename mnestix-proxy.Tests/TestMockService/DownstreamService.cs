@@ -6,12 +6,17 @@ namespace mnestix_proxy.Tests.TestMockService
 {
     public class DownstreamService
     {
-        private readonly IHost _host;
-        public readonly HttpClient Client;
-        public readonly string Url;
-
+        private IHost? _host;
+        public HttpClient? Client;
+        public string? Url;
         public DownstreamService()
         {
+            StartServer();
+        }
+
+        private void StartServer()
+        {
+            if (_host != null) return;
             _host = Host.CreateDefaultBuilder()
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -23,12 +28,12 @@ namespace mnestix_proxy.Tests.TestMockService
                                   {
                                       var path = context.Request.Path.Value?.ToLowerInvariant();
 
-                                      if (path.StartsWith("/repo"))
+                                      if (path != null && path.StartsWith("/repo"))
                                       {
                                           context.Response.StatusCode = 200;
                                           await context.Response.WriteAsync("Repository Service called!");
                                       }
-                                      else if (path == "/discovery")
+                                      else if (path != null && path.StartsWith("/discovery"))
                                       {
                                           context.Response.StatusCode = 200;
                                           await context.Response.WriteAsync("Discovery Service called!");
@@ -50,14 +55,15 @@ namespace mnestix_proxy.Tests.TestMockService
                 .Addresses
                 .First();
 
+            if (address == null) return;
             Url = address.TrimEnd('/');
             Client = new HttpClient { BaseAddress = new Uri(Url) };
         }
 
         public void Dispose()
         {
-            Client.Dispose();
-            _host.Dispose();
+            Client?.Dispose();
+            _host?.Dispose();
         }
     }
 }

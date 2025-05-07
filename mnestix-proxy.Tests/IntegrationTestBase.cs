@@ -6,14 +6,9 @@ using mnestix_proxy.Middleware;
 
 namespace mnestix_proxy.Tests
 {
-    public class IntegrationTestBase : WebApplicationFactory<Program>
+    public class IntegrationTestBase(string downstreamUrl) : WebApplicationFactory<Program>
     {
-        private readonly string _downstreamUrl;
-
-        public IntegrationTestBase(string downstreamUrl)
-        {
-            _downstreamUrl = downstreamUrl;
-        }
+        private readonly string _downstreamUrl = downstreamUrl;
 
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {

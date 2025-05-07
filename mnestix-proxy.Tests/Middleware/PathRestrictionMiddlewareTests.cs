@@ -7,13 +7,14 @@ namespace mnestix_proxy.Tests.Middleware
     [TestFixture]
     public class PathRestrictionMiddlewareTests : IDisposable
     {
-        private DownstreamTestService _mockDownstream;
+        private DownstreamService _mockDownstream;
         private HttpClient _httpClient;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void Setup()
         {
-            _mockDownstream = new DownstreamTestService();
+            _mockDownstream = new DownstreamService();
+            if (_mockDownstream.Url == null) return;
             var _factory = new IntegrationTestBase(_mockDownstream.Url);
             _httpClient = _factory.CreateClient();
         }
@@ -26,9 +27,12 @@ namespace mnestix_proxy.Tests.Middleware
             var response = await _httpClient.GetAsync(path);
             var content = await response.Content.ReadAsStringAsync();
 
-            // Assert
-            Assert.AreEqual(HttpStatusCode.MethodNotAllowed, response.StatusCode);
-            Assert.AreEqual("Access to the requested path is restricted.", content);
+            Assert.Multiple(() =>
+            {
+                // Assert
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.MethodNotAllowed));
+                Assert.That(content, Is.EqualTo("Access to the requested path is restricted."));
+            });
         }
 
         [TestCase("/repo/shells", "POST")]
@@ -40,10 +44,10 @@ namespace mnestix_proxy.Tests.Middleware
             var response = await _httpClient.SendAsync(request);
 
             // Assert
-            Assert.AreNotEqual(HttpStatusCode.MethodNotAllowed, response.StatusCode);
+            Assert.That(response.StatusCode, Is.Not.EqualTo(HttpStatusCode.MethodNotAllowed));
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void Dispose()
         {
             _httpClient.Dispose();
