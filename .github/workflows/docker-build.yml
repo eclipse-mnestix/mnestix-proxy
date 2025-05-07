@@ -1,0 +1,36 @@
+name: CI and Docker Deploy
+
+on:
+  push:
+    branches: ['main', 'dev', 'staging']
+    tags: ['v*.*.*']
+  pull_request:
+    branches: ['dev']
+
+jobs:
+   run-tests:
+     name: Run Tests
+     runs-on: ubuntu-latest
+     permissions:
+       contents: read
+   
+     steps:
+       - name: Checkout repository
+         uses: actions/checkout@v4
+
+       - name: Setup .NET
+         uses: actions/setup-dotnet@v4
+         with:
+           dotnet-version: '8.0.x'
+
+       - name: Restore dependencies
+         run: dotnet restore
+
+       - name: Build solution
+         run: dotnet build --no-restore --configuration Release
+
+       - name: Run tests
+         run: dotnet test --no-build --verbosity normal --configuration Release
+
+        
+    
