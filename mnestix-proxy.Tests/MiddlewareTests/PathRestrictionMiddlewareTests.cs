@@ -15,13 +15,16 @@ namespace mnestix_proxy.Tests.MiddlewareTests
         {
             _mockDownstream = new DownstreamService();
             if (_mockDownstream.Url == null) return;
-            var _factory = new IntegrationTestBase(_mockDownstream.Url);
+            var _factory = new IntegrationTestBase(_mockDownstream.Url, new Dictionary<string, string>
+            {
+                { "Features:AllowRetrievingAllShellsAndSubmodels", "false" },
+            });
             _httpClient = _factory.CreateClient();
         }
 
         [TestCase("/repo/shells")]
         [TestCase("/repo/submodels")]
-        public async Task RestrictedPaths_Should_Return_405_When_Feature_Disabled(string path)
+        public async Task Should_Return_405_When_Middleware_Feature_Disabled(string path)
         {
             // Act
             var response = await _httpClient.GetAsync(path);
@@ -37,7 +40,7 @@ namespace mnestix_proxy.Tests.MiddlewareTests
 
         [TestCase("/repo/shells", "POST")]
         [TestCase("/repo/submodels/mockBase64EncodedSubmodelId", "GET")]
-        public async Task NonRestrictedRequests_Should_Not_Return_405(string path, string method)
+        public async Task Should_Not_Return_405_When_Middleware_Feature_Disabled(string path, string method)
         {
             // Act
             var request = new HttpRequestMessage(new HttpMethod(method), path);

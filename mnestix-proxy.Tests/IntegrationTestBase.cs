@@ -18,7 +18,7 @@ namespace mnestix_proxy.Tests
                 var inMemorySettings = new Dictionary<string, string>
                 {
                     { "CustomerEndpointsSecurity:ApiKey", "verySecureApiKeyMock" },
-                    { "Features:AllowRetrievingAllShellsAndSubmodels", "false" },
+                    { "Features:AllowRetrievingAllShellsAndSubmodels", "true" },
                     { "ReverseProxy:Clusters:aasRepoCluster:Destinations:destination1:Address", _downstreamUrl },
                     { "ReverseProxy:Clusters:submodelRepoCluster:Destinations:destination1:Address", _downstreamUrl },
                 };

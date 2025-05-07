@@ -15,16 +15,13 @@ namespace mnestix_proxy.Tests.MiddlewareTests
         {
             _mockDownstream = new DownstreamService();
             if (_mockDownstream.Url == null) return;
-            var _factory = new IntegrationTestBase(_mockDownstream.Url, new Dictionary<string, string>
-            {
-                { "Features:AllowRetrievingAllShellsAndSubmodels", "true" },
-            });
+            var _factory = new IntegrationTestBase(_mockDownstream.Url);
             _httpClient = _factory.CreateClient();
         }
 
         [TestCase("/repo/shells")]
         [TestCase("/repo/submodels")]
-        public async Task RestrictedPaths_Should_Return_200_When_Feature_Enabled(string path)
+        public async Task Should_Return_200_When_Middleware_Feature_Enabled(string path)
         {
             // Act
             var response = await _httpClient.GetAsync(path);
