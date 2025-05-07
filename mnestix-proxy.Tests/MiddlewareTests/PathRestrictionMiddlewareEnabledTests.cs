@@ -2,7 +2,7 @@
 using mnestix_proxy.Tests.TestMockService;
 using System.Net;
 
-namespace mnestix_proxy.Tests.Middleware
+namespace mnestix_proxy.Tests.MiddlewareTests
 {
     [TestFixture]
     public class PathRestrictionMiddlewareEnabledTests : IDisposable
