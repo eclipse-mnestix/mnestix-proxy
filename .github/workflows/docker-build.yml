@@ -9,7 +9,7 @@ on:
 
 jobs:
   run-tests:
-    name: Run Tests
+    name: run Tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
