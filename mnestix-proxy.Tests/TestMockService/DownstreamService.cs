@@ -27,8 +27,13 @@ namespace mnestix_proxy.Tests.TestMockService
                                   app.Run(async context =>
                                   {
                                       var path = context.Request.Path.Value?.ToLowerInvariant();
-        
-                                      if (path != null && path.StartsWith("/shells"))
+
+                                      if (path != null && path.StartsWith("/test-endpoint"))
+                                      {
+                                          context.Response.StatusCode = 200;
+                                          await context.Response.WriteAsync("Mnestix Api called!");
+                                      }
+                                      else if (path != null && path.StartsWith("/shells"))
                                       {
                                           context.Response.StatusCode = 200;
                                           await context.Response.WriteAsync("AAS Repository Service called!");
@@ -38,7 +43,7 @@ namespace mnestix_proxy.Tests.TestMockService
                                           context.Response.StatusCode = 200;
                                           await context.Response.WriteAsync("Submodel Repository Service called!");
                                       }
-                                      else if (path != null && path.StartsWith("/discovery"))
+                                      else if (path != null && path.StartsWith("/discovery-test-endpoint"))
                                       {
                                           context.Response.StatusCode = 200;
                                           await context.Response.WriteAsync("Discovery Service called!");
