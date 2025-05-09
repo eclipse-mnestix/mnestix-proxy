@@ -60,4 +60,3 @@ jobs:
           push: false
           platforms: linux/amd64,linux/arm64
           tags: mnestix/mnestix-proxy:latest
-          load: true
