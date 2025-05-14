@@ -12,8 +12,10 @@ services:
     ports:
       - '5065:5065'
     environment:
-    # API key authorization
+      # API key authorization
       CustomerEndpointsSecurity__ApiKey: ${MNESTIX_BACKEND_API_KEY:-verySecureApiKey}
+      # AzureAd
+      AzureAd__EnableAzureAdAuth: "false"
       # Connection to Repository Service:
       ReverseProxy__Clusters__mnestixApiCluster__Destinations__destination1__Address: 'http://mnestix-api:5064/'
       ReverseProxy__Clusters__aasRepoCluster__Destinations__destination1__Address: 'http://aas-environment:8081/'
@@ -25,7 +27,7 @@ services:
       # Token:
       ReverseProxy__Routes__InfluxRoute__Transforms__1__Set: 'Token '
       # OpenID Configuration
-      OpenId__EnableOpenIdAuth: "true"
+      OpenId__EnableOpenIdAuth: "false"
       OpenId__Issuer: "http://keycloak:8080/realms/Mnestix"
       OpenId__ClientID: "mnestixApi-demo"
       OpenId__RequireHttpsMetadata: "false"
@@ -101,6 +103,8 @@ services:
     profiles: ['', 'basyx', 'tests']
     depends_on:
       - mongodb
+    ports:
+      - '8081:8081'
     environment:
       # MongoDb configuration for Basyx Repository
       BASYX__BACKEND: MongoDB

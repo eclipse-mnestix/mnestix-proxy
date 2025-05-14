@@ -57,8 +57,9 @@ public static class AuthenticationServicesRegistration
         else {
             services.AddAuthentication(options =>
             {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer();
+                options.DefaultAuthenticateScheme = null;
+                options.DefaultChallengeScheme = null;
+            });
         }
     }
 }
