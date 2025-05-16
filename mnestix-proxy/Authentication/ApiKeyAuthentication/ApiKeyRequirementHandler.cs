@@ -53,6 +53,6 @@ public class ApiKeyRequirementHandler(
             _httpContextAccessor.HttpContext?.Request.Method, 
             _httpContextAccessor.HttpContext?.Request.Path);
         context.Fail(new AuthorizationFailureReason(this,
-            "For all methods except 'GET' you need a valid ApiKey in your header."));
+            "For all methods except 'GET' you need a valid X-API-KEY in your header."));
     }
 }
