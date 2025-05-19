@@ -28,7 +28,7 @@ namespace mnestix_proxy.Tests.TestMockService
                                   {
                                       var path = context.Request.Path.Value?.ToLowerInvariant();
 
-                                      if (path != null && path.StartsWith("/test-endpoint"))
+                                      if (path != null && path.StartsWith("/api/test-endpoint"))
                                       {
                                           context.Response.StatusCode = 200;
                                           await context.Response.WriteAsync("Mnestix Api called!");
