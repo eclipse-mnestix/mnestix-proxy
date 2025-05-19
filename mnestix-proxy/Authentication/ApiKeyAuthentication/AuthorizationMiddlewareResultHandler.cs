@@ -39,7 +39,6 @@ namespace mnestix_proxy.Authentication.ApiKeyAuthentication
                 return;
             }
 
-            // Proceed normally
             await _defaultHandler.HandleAsync(next, context, policy, authorizeResult);
         }
     }
