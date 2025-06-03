@@ -43,6 +43,7 @@ services:
     ports:
       - '5064:5064'
     environment:
+      ServerUrls ServerUrls: 'http://mnestix-proxy:5065/repo/'
       # API key authorization
       CustomerEndpointsSecurity__ApiKey: ${MNESTIX_BACKEND_API_KEY:-verySecureApiKey}
       # Connection to Repository Service:
