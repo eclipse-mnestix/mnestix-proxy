@@ -43,6 +43,7 @@ services:
     ports:
       - '5064:5064'
     environment:
+      ServerUrls ServerUrls: 'http://mnestix-proxy:5065/repo/'
       # API key authorization
       CustomerEndpointsSecurity__ApiKey: ${MNESTIX_BACKEND_API_KEY:-verySecureApiKey}
       # Connection to Repository Service:
@@ -103,6 +104,8 @@ services:
     profiles: ['', 'basyx', 'tests']
     depends_on:
       - mongodb
+    ports:
+      - '8081:8081'
     environment:
       # MongoDb configuration for Basyx Repository
       BASYX__BACKEND: MongoDB

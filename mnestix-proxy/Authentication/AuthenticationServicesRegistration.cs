@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
+using mnestix_proxy.Authentication.ApiKeyAuthentication;
 
 namespace mnestix_proxy.Authentication;
 
@@ -55,11 +57,7 @@ public static class AuthenticationServicesRegistration
             services.AddMicrosoftIdentityWebApiAuthentication(configuration);
         }
         else {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = null;
-                options.DefaultChallengeScheme = null;
-            });
+            services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
         }
     }
 }
