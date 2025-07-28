@@ -6,7 +6,7 @@
 services:
   mnestix-proxy:
     container_name: mnestix-proxy
-    image: mnestix-proxy:0.0.1
+    image: mnestix-proxy:0.1.0
     build:
       dockerfile: Dockerfile
     ports:

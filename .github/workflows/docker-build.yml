@@ -11,7 +11,7 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: mnestix-proxy
   # Update the version manually
-  IMAGE_TAG_VERSION: 0.0.1
+  IMAGE_TAG_VERSION: 0.1.0
 
 jobs:
   run-tests:
