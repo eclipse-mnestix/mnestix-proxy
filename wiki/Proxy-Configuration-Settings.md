@@ -60,7 +60,7 @@ Defines backend destinations for each route:
 - **aasRepoCluster**: `http://localhost:8081/`
 - **submodelRepoCluster**: `http://localhost:8081/`
 - **discoveryCluster**: `http://localhost:8082/`
-- **influxCluster**: `http://20.224.163.243:8086`
+- **influxCluster**: `http://<your-domain>:<port>`
 
 ---
 
