@@ -1,6 +1,6 @@
 # Security Configuration
 
-This document describes the available security configuration options for the mnestix-proxy project, focusing on integration with **Keycloak** and **Azure Active Directory**.
+This document describes the available security configuration options for the mnestix-proxy project, focusing on integration with **Keycloak** and **Azure Entra ID**.
 
 ## Keycloak
 
@@ -10,7 +10,7 @@ Keycloak is an open-source identity and access management solution. To enable Ke
   Update your `appsettings.json` with the following section:
   ```json
   "OpenId": {
-    "EnableOpenIdAuth": "false",
+    "EnableOpenIdAuth": "true",
     "Issuer": "https://<keycloak-server>/realms/<realm-name>",
     "ClientID": "<client-id>",
     "RequireHttpsMetadata": "false"
@@ -20,15 +20,15 @@ Keycloak is an open-source identity and access management solution. To enable Ke
   The proxy will validate JWT tokens issued by Keycloak. Ensure your clients obtain tokens from Keycloak and include them in the `Authorization: Bearer <token>` header.
 
 
-## Azure Active Directory
+## Azure Entra ID
 
-Azure AD provides cloud-based identity management. To enable Azure AD authentication:
+Azure Entra ID provides cloud-based identity management. To enable Azure Entra ID authentication:
 
 - **Configuration**:  
   Update your `appsettings.json` with the following section:
   ```json
   "AzureAd": {
-    "EnableAzureAdAuth": "false",
+    "EnableAzureAdAuth": "true",
     "Instance": "https://login.microsoftonline.com/",
     "ClientId": "<client-id>",
     "Domain": "<your-domain>", 
@@ -36,12 +36,12 @@ Azure AD provides cloud-based identity management. To enable Azure AD authentica
   }
   ```
 - **Usage**:  
-  The proxy will validate JWT tokens issued by Azure AD. Clients must authenticate with Azure AD and include the token in the `Authorization` header.
+  The proxy will validate JWT tokens issued by Azure Entra ID. Clients must authenticate with Azure Entra ID and include the token in the `Authorization` header.
 
 
 ## Additional Notes
 
-- Both Keycloak and Azure AD configurations rely on the standard ASP.NET Core authentication middleware.
+- Both Keycloak and Azure Entra ID configurations rely on the standard ASP.NET Core authentication middleware.
 - Ensure the `Audience` matches your application's client ID.
 - For development, you may set `RequireHttpsMetadata` to `false`, but it is recommended to use `true` in production.
 

@@ -6,7 +6,6 @@ Before you start developing with **mnestix-proxy**, ensure you have the followin
 
 - **.NET 8 SDK** (required for building and running the project)
 - **Git** (for version control)
-- **Visual Studio Code** or **JetBrains Rider** (recommended IDEs)
 - **Docker** (optional, for containerized development and testing)
 
 ## Project Structure
