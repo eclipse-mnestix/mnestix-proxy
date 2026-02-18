@@ -27,7 +27,7 @@ namespace mnestix_proxy.Tests.AuthenticationTests
         [TestCase("/repo/shells/mockBase64EncodedAasId", "GET")]
         [TestCase("/repo/submodels", "GET")]
         [TestCase("/repo/submodels/mockBase64EncodedSubmodelId", "GET")]
-        public async Task Should_Succeed_For_GET_and_HEAD_Requests_Without_ApiKey(string path, string method)
+        public async Task Should_Succeed_For_GET_OPTIONS_HEAD_Requests_Without_ApiKey(string path, string method)
         {
             // Act
             var request = new HttpRequestMessage(new HttpMethod(method), path);
