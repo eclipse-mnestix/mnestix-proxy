@@ -22,6 +22,7 @@ namespace mnestix_proxy.Tests.AuthenticationTests
         }
 
         [TestCase("/repo/shells", "GET")]
+        [TestCase("/repo/shells", "OPTIONS")]
         [TestCase("/repo/shells", "HEAD")]
         [TestCase("/repo/shells/mockBase64EncodedAasId", "GET")]
         [TestCase("/repo/submodels", "GET")]
