@@ -49,9 +49,10 @@ namespace mnestix_proxy
             // pipeline settings
             var app = builder.Build();
 
-            app.UseMnestixConfiguredAuth(builder.Configuration);
-
+            // IMPORTANT: apply CORS BEFORE authentication so preflight OPTIONS are handled
             app.UseCors("allowAnything");
+
+            app.UseMnestixConfiguredAuth(builder.Configuration);
 
             app.MapReverseProxy(proxyPipeline =>
             {

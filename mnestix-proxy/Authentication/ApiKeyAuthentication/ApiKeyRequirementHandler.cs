@@ -33,7 +33,7 @@ public class ApiKeyRequirementHandler(
     private void SucceedRequirementIfApiKeyPresentAndValid(AuthorizationHandlerContext context,
         IAuthorizationRequirement requirement)
     {
-        if (_httpContextAccessor.HttpContext?.Request.Method is "GET" or "HEAD")
+        if (_httpContextAccessor.HttpContext?.Request.Method is "GET" or "HEAD" or "OPTIONS")
         {
             context.Succeed(requirement);
             return;
