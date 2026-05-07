@@ -40,6 +40,24 @@ Defines how incoming requests are matched and routed to clusters:
   - Authorization: `customApiKeyToModifyValuesPolicy`
   - Transforms: Path pattern and CORS header
 
+- **ConceptDescriptionRepositoryRoute** - This route is configuration to the concept description repository.
+  - Path: `repo/concept-descriptions/{**remainder}`
+  - Cluster: `conceptDescriptionRepoCluster`
+  - Authorization: `customApiKeyToModifyValuesPolicy`
+  - Transforms: Path pattern and CORS header
+
+- **AasRegistryRoute** - This route forwards requests to the AAS Registry.
+  - Path: `registry/shell-descriptors/{**catch-all}`
+  - Cluster: `aasRegistryCluster`
+  - Authorization: `customApiKeyToModifyValuesPolicy`
+  - Transforms: Path pattern and CORS header
+
+- **SubmodelRegistryRoute** - This route forwards requests to the Submodel Registry.
+  - Path: `registry/submodel-descriptors/{**remainder}`
+  - Cluster: `submodelRegistryCluster`
+  - Authorization: `customApiKeyToModifyValuesPolicy`
+  - Transforms: Path pattern and CORS header
+
 - **DiscoveryRoute** - This route is configuration to discovery service (required for 'AasDiscoveryMiddleware').
   - Path: `discovery/{**catch-all}`
   - Cluster: `discoveryCluster`
@@ -59,6 +77,9 @@ Defines backend destinations for each route:
 - **mnestixApiCluster**: `http://localhost:5064/`
 - **aasRepoCluster**: `http://localhost:8081/`
 - **submodelRepoCluster**: `http://localhost:8081/`
+- **conceptDescriptionRepoCluster**: `http://localhost:8081/`
+- **aasRegistryCluster**: `http://localhost:8081/`
+- **submodelRegistryCluster**: `http://localhost:8081/`
 - **discoveryCluster**: `http://localhost:8082/`
 - **influxCluster**: `http://<your-domain>:<port>`
 
