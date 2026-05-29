@@ -15,6 +15,11 @@ namespace mnestix_proxy.Tests.TestMockService
         private readonly List<ReceivedRequest> _receivedRequests = [];
         private readonly object _lock = new();
 
+        /// <summary>
+        /// When set, overrides the default status code for all responses. Use to simulate registry errors.
+        /// </summary>
+        public int? ForcedStatusCode { get; set; }
+
         public IReadOnlyList<ReceivedRequest> ReceivedRequests
         {
             get { lock (_lock) { return [.. _receivedRequests]; } }
@@ -59,7 +64,7 @@ namespace mnestix_proxy.Tests.TestMockService
 
                                       if (path.StartsWith("/shell-descriptors", StringComparison.OrdinalIgnoreCase))
                                       {
-                                          context.Response.StatusCode = method switch
+                                          context.Response.StatusCode = ForcedStatusCode ?? method switch
                                           {
                                               "POST" => StatusCodes.Status201Created,
                                               "DELETE" => StatusCodes.Status204NoContent,

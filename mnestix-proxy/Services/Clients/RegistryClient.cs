@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Options;
 using mnestix_proxy.Configuration;
 using mnestix_proxy.Services.Shared;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 using System.Net;
 
@@ -9,16 +8,10 @@ namespace mnestix_proxy.Services.Clients
 {
     public class RegistryClient(IOptions<RegistryServiceOptions> options) : IRegistryClient
     {
-        public async Task<(bool isSuccess, string Result)> RegisterOrUpdateShellDescriptor(string aasId, string globalAssetId)
+        public async Task<(bool isSuccess, string Result)> RegisterOrUpdateShellDescriptor(string aasId, string shellDescriptorJson)
         {
             var client = new RestClient(options.Value.Address);
             var b64AasId = Base64StringDeAndEncoder.EncodeTo64(aasId);
-
-            var descriptor = new JObject
-            {
-                { "id", aasId },
-                { "globalAssetId", globalAssetId }
-            };
 
             // Try POST first (create new descriptor)
             var postRequest = new RestRequest("/shell-descriptors")
@@ -26,7 +19,7 @@ namespace mnestix_proxy.Services.Clients
                 RequestFormat = DataFormat.Json,
                 Method = Method.Post
             };
-            postRequest.AddBody(descriptor.ToString(), "application/json");
+            postRequest.AddBody(shellDescriptorJson, "application/json");
 
             var postResponse = await client.PostAsync(postRequest);
 
@@ -43,7 +36,7 @@ namespace mnestix_proxy.Services.Clients
                     RequestFormat = DataFormat.Json,
                     Method = Method.Put
                 };
-                putRequest.AddBody(descriptor.ToString(), "application/json");
+                putRequest.AddBody(shellDescriptorJson, "application/json");
 
                 var putResponse = await client.PutAsync(putRequest);
 

@@ -62,7 +62,10 @@ namespace mnestix_proxy.Middleware
 
                     if (aasId != null && assetId != null)
                     {
-                        _ = registryClient.RegisterOrUpdateShellDescriptor(aasId: aasId, globalAssetId: assetId)
+                        var baseUrl = $"{context.Request.Scheme}://{context.Request.Host}";
+                        var descriptor = BuildShellDescriptor(requestBody, aasId, baseUrl);
+
+                        _ = registryClient.RegisterOrUpdateShellDescriptor(aasId: aasId, shellDescriptorJson: descriptor.ToString())
                             .ContinueWith(t =>
                             {
                                 if (t.IsFaulted)
@@ -102,6 +105,58 @@ namespace mnestix_proxy.Middleware
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Converts an AssetAdministrationShell body (AAS Repository format) into an
+        /// AssetAdministrationShellDescriptor (AAS Registry format), mapping all available
+        /// fields and appending an endpoint pointing back to this proxy.
+        /// </summary>
+        private static JObject BuildShellDescriptor(JObject aasBody, string aasId, string proxyBaseUrl)
+        {
+            var assetInfo = aasBody["assetInformation"];
+
+            var descriptor = new JObject
+            {
+                ["id"] = aasId,
+                ["globalAssetId"] = assetInfo?["globalAssetId"]
+            };
+
+            // Pass-through optional metadata fields
+            if (aasBody["idShort"] is { } idShort)
+                descriptor["idShort"] = idShort;
+            if (aasBody["description"] is { } description)
+                descriptor["description"] = description;
+            if (aasBody["displayName"] is { } displayName)
+                descriptor["displayName"] = displayName;
+            if (aasBody["administration"] is { } administration)
+                descriptor["administration"] = administration;
+
+            // Flatten assetInformation fields to the descriptor top level
+            if (assetInfo?["assetKind"] is { } assetKind)
+                descriptor["assetKind"] = assetKind;
+            if (assetInfo?["assetType"] is { } assetType)
+                descriptor["assetType"] = assetType;
+            if (assetInfo?["specificAssetIds"] is { } specificAssetIds)
+                descriptor["specificAssetIds"] = specificAssetIds;
+
+            // Endpoint pointing to this proxy's repo path for the AAS
+            var href = $"{proxyBaseUrl}/repo/shells/{Base64StringDeAndEncoder.EncodeTo64(aasId)}";
+            descriptor["endpoints"] = new JArray
+            {
+                new JObject
+                {
+                    ["protocolInformation"] = new JObject
+                    {
+                        ["href"] = href,
+                        ["endpointProtocol"] = "HTTP",
+                        ["endpointProtocolVersion"] = new JArray { "1.1" }
+                    },
+                    ["interface"] = "AAS-3.0"
+                }
+            };
+
+            return descriptor;
         }
     }
 }
