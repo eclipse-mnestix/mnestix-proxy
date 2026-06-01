@@ -21,6 +21,11 @@ namespace mnestix_proxy
             builder.Services.Configure<DiscoveryServiceOptions>(
                 builder.Configuration.GetSection(DiscoveryServiceOptions.Options));
 
+            // Registry Client settings
+            builder.Services.AddTransient<IRegistryClient, RegistryClient>();
+            builder.Services.Configure<RegistryServiceOptions>(
+                builder.Configuration.GetSection(RegistryServiceOptions.Options));
+
             builder.Services.AddAuthenticationServices(builder.Configuration);
 
             // Adds authorization handler
@@ -64,12 +69,20 @@ namespace mnestix_proxy
                     proxyPipeline.Use(PathRestrictionMiddleware.PathRestrictionHandling());
                 }
 
-                // AAS registry
+                // AAS Discovery
                 _ = bool.TryParse(builder.Configuration["Features:AasDiscoveryMiddleware"],
+                    out var aasDiscoveryMiddleware);
+                if (aasDiscoveryMiddleware)
+                {
+                    proxyPipeline.Use(AasDiscoveryServiceMiddleware.ConfigureAasDiscoveryHandling());
+                }
+
+                // AAS Registry
+                _ = bool.TryParse(builder.Configuration["Features:AasRegistryMiddleware"],
                     out var aasRegistryMiddleware);
                 if (aasRegistryMiddleware)
                 {
-                    proxyPipeline.Use(AasDiscoveryServiceMiddleware.ConfigureAasDiscoveryHandling());
+                    proxyPipeline.Use(AasRegistryServiceMiddleware.ConfigureAasRegistryHandling());
                 }
 
                 // MQTT Eventing

@@ -19,10 +19,13 @@ namespace mnestix_proxy.Tests
                 {
                     { "CustomerEndpointsSecurity:ApiKey", "verySecureApiKeyMock" },
                     { "Features:AllowRetrievingAllShellsAndSubmodels", "true" },
+                    { "Features:AasDiscoveryMiddleware", "false" },
+                    { "Features:AasRegistryMiddleware", "false" },
                     { "ReverseProxy:Clusters:mnestixApiCluster:Destinations:destination1:Address", _downstreamUrl },
                     { "ReverseProxy:Clusters:aasRepoCluster:Destinations:destination1:Address", _downstreamUrl },
                     { "ReverseProxy:Clusters:submodelRepoCluster:Destinations:destination1:Address", _downstreamUrl },
                     { "ReverseProxy:Clusters:discoveryCluster:Destinations:destination1:Address", _downstreamUrl },
+                    { "ReverseProxy:Clusters:aasRegistryCluster:Destinations:destination1:Address", _downstreamUrl },
                 };
 
                 if (_customSettings != null)
