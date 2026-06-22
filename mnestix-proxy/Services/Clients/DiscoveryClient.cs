@@ -73,12 +73,14 @@ namespace mnestix_proxy.Services.Clients
             return new ValueTuple<bool, List<string>>(true, result!);
         }
 
-        public Task<(bool isSuccess, string Result)> LinkAasIdAndAssetId(string aasId, string assetId)
+        public Task<(bool isSuccess, string Result)> LinkAasIdAndAssetId(string aasId, string assetId, List<Tuple<string, string>>? specificAssetIds = null)
         {
             var assetIds = new List<Tuple<string, string>>
-        {
-            Tuple.Create("globalAssetId", assetId),
-        };
+            {
+                Tuple.Create("globalAssetId", assetId),
+            };
+            if (specificAssetIds != null)
+                assetIds.AddRange(specificAssetIds);
             return PostAllAssetLinksById(aasId, assetIds);
         }
 

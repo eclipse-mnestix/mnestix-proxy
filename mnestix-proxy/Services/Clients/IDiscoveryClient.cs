@@ -3,7 +3,7 @@
     public interface IDiscoveryClient
     {
         // The two functions below just are convenience functions to abstract some complexity away
-        Task<(bool isSuccess, string Result)> LinkAasIdAndAssetId(string aasId, string assetId);
+        Task<(bool isSuccess, string Result)> LinkAasIdAndAssetId(string aasId, string assetId, List<Tuple<string, string>>? specificAssetIds = null);
         Task<(bool isSuccess, string Result)> DeleteAllAssetLinksById(string aasIdentifier);
 
         // The functions below are the ones, that were introduced in

@@ -7,7 +7,7 @@ using System.Text;
 namespace mnestix_proxy.Middleware
 {
     /// <summary>
-    /// This middleware class is responsible for storing aas in the discovery 
+    /// This middleware class is responsible for storing aas in the discovery
     /// </summary>
     public static class AasDiscoveryServiceMiddleware
     {
@@ -53,13 +53,22 @@ namespace mnestix_proxy.Middleware
                 var modelType = requestBody["modelType"]?.Value<string>();
                 if (modelType is "AssetAdministrationShell")
                 {
-                    var assetId = requestBody["assetInformation"]?["globalAssetId"]?.Value<string>();
+                    var assetInfo = requestBody["assetInformation"];
+                    var assetId = assetInfo?["globalAssetId"]?.Value<string>();
                     var aasId = requestBody["id"]?.Value<string>();
 
-                    Debug.Assert(aasId != null, nameof(aasId) + " != null");
-                    Debug.Assert(assetId != null, nameof(assetId) + " != null");
+                    if (aasId != null && assetId != null)
+                    {
+                        var specificAssetIds = assetInfo?["specificAssetIds"]
+                            ?.OfType<JObject>()
+                            .Select(x => Tuple.Create(
+                                x["name"]?.Value<string>() ?? string.Empty,
+                                x["value"]?.Value<string>() ?? string.Empty))
+                            .Where(t => !string.IsNullOrEmpty(t.Item1))
+                            .ToList();
 
-                    discoveryClient.LinkAasIdAndAssetId(aasId: aasId, assetId: assetId);
+                        discoveryClient.LinkAasIdAndAssetId(aasId: aasId, assetId: assetId, specificAssetIds: specificAssetIds);
+                    }
                 }
             }
 
