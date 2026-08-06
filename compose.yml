@@ -8,184 +8,125 @@ services:
     container_name: mnestix-proxy
     image: mnestix/mnestix-proxy:1.0.1
     ports:
-      - '5065:5065'
+      - "5065:5065"
     environment:
-      # API key authorization
-      CustomerEndpointsSecurity__ApiKey: ${MNESTIX_BACKEND_API_KEY:-verySecureApiKey}
-      # AzureAd
-      AzureAd__EnableAzureAdAuth: "false"
-      # Connection to Repository Service:
-      ReverseProxy__Clusters__mnestixApiCluster__Destinations__destination1__Address: 'http://mnestix-api:5064/'
-      ReverseProxy__Clusters__aasRepoCluster__Destinations__destination1__Address: 'http://aas-environment:8081/'
-      ReverseProxy__Clusters__submodelRepoCluster__Destinations__destination1__Address: 'http://aas-environment:8081/'
-      ReverseProxy__Clusters__discoveryCluster__Destinations__destination1__Address: 'http://aas-discovery:8081/'
-      # InfluxDB Configuration
-      # URL to specify the host and port where InfluxDB is running:
-      ReverseProxy__Clusters__influxCluster__Destinations__destination1__Address: 'http://example/'
-      # Token:
-      ReverseProxy__Routes__InfluxRoute__Transforms__1__Set: 'Token '
-      # OpenID Configuration
-      OpenId__EnableOpenIdAuth: "false"
-      OpenId__Issuer: "http://keycloak:8080/realms/Mnestix"
-      OpenId__ClientID: "mnestixApi-demo"
-      OpenId__RequireHttpsMetadata: "false"
-      # ASP.NET Core URLs
-      ASPNETCORE_URLS: "http://+:5065"
-    networks:
-      - mnestix-network
-
-  mnestix-api:
-    image: mnestix/mnestix-api:1.3.4
-    container_name: mnestix-api
-    profiles: ['', 'backend', 'tests']
-    environment:
-      ServerUrls ServerUrls: 'http://mnestix-proxy:5065/repo/'
-      # API key authorization
-      CustomerEndpointsSecurity__ApiKey: ${MNESTIX_BACKEND_API_KEY:-verySecureApiKey}
-      # Connection to Repository Service:
-      ReverseProxy__Clusters__aasRepoCluster__Destinations__destination1__Address: 'http://aas-environment:8081/' # Should be deleted with new API without Proxy
-      ReverseProxy__Clusters__submodelRepoCluster__Destinations__destination1__Address: 'http://aas-environment:8081/' # Should be deleted with new API without Proxy
-      ReverseProxy__Clusters__discoveryCluster__Destinations__destination1__Address: 'http://aas-discovery:8081/' # Should be deleted with new API without Proxy
-      # Features Configuration
-      Features__AasRegistryMiddleware: 'true' # Should be deleted with new API without Proxy
-      Features__UseMongoDbBasedAasIdStorage: 'true'
-      Features__AllowRetrievingAllShellsAndSubmodels: 'true' # Should be deleted with new API without Proxy
-      Features__UseAuthentication: 'false'
-      # InfluxDB Configuration
-      # URL to specify the host and port where InfluxDB is running:
-      ReverseProxy__Clusters__influxCluster__Destinations__destination1__Address: 'http://example/' # Should be deleted with new API without Proxy
-      # Token:
-      ReverseProxy__Routes__InfluxRoute__Transforms__1__Set: 'Token ' # Should be deleted with new API without Proxy
-      # MongoDB Configuration
-      BasyxDbConnectionConfiguration__MongoConnectionString: 'mongodb://mongoAdmin:mongoPassword@mongodb:27017/?authSource=admin'
-      BasyxDbConnectionConfiguration__DatabaseName: basyxdb
-      BasyxDbConnectionConfiguration__AasCollectionName: 'aas-repo'
-      # ASP.NET Core URLs
-      ASPNETCORE_URLS: 'http://+:5064'
+      - ASPNETCORE_URLS=http://+:5065
+      - CustomerEndpointsSecurity__ApiKey=verySecureApiKey
+      - ReverseProxy__Clusters__mnestixApiCluster__Destinations__destination1__Address=http://mnestix-aas-generator:5064/
+      - ReverseProxy__Clusters__aasRepoCluster__Destinations__destination1__Address=http://aas-environment:8081/
+      - ReverseProxy__Clusters__submodelRepoCluster__Destinations__destination1__Address=http://aas-environment:8081/
+      - ReverseProxy__Clusters__conceptDescriptionCluster__Destinations__destination1__Address=http://aas-environment:8081/
+      - ReverseProxy__Clusters__discoveryCluster__Destinations__destination1__Address=http://aas-environment:8081/
+      - ReverseProxy__Clusters__influxCluster__Destinations__destination1__Address=http://example/
+      - ReverseProxy__Routes__InfluxRoute__Transforms__1__Set=Token 
     depends_on:
       aas-environment:
-        condition: service_healthy # only after the healthcheck in aas is successful, the mnestix container is being created
-    logging:
-      driver: 'json-file'
-      options:
-        max-file: '5'
-        max-size: '100m'
+        condition: service_healthy
     networks:
       - mnestix-network
 
-  mongodb:
-    image: mongo:8
-    container_name: mongodb
+  mnestix-aas-generator:
+    image: mnestix/mnestix-aas-generator:1.4.0
+    container_name: mnestix-aas-generator
+    environment:
+      - ASPNETCORE_URLS=http://+:5064
+      - CustomerEndpointsSecurity__ApiKey=verySecureApiKey
+      - Features__UseAuthentication=false
+      - Features__AddExampleAas=false
+      - Features__RequiredShells=true
+      - ServerUrls=http://mnestix-proxy:5065/repo/
+    depends_on:
+      mnestix-proxy:
+        condition: service_started
+      aas-environment:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "100m"
+    networks:
+      - mnestix-network
+
+
+  basyx-db:
+    image: postgres:16-alpine
+    container_name: basyx-db
     profiles: ['', 'basyx', 'tests']
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongoAdmin
-      MONGO_INITDB_ROOT_PASSWORD: mongoPassword
-    # Set health checks to wait until mongo has started
+      - POSTGRES_USER=basyx
+      - POSTGRES_PASSWORD=basyx
+      - POSTGRES_DB=basyxdb
     healthcheck:
-      test: echo "db.runCommand("ping").ok" | mongosh mongodb:27017/test --quiet
-      interval: 3s
+      test: ["CMD-SHELL", "pg_isready -U basyx -d basyxdb"]
+      interval: 5s
       timeout: 3s
-      retries: 5
+      retries: 10
+    volumes:
+      - basyx-db-data:/var/lib/postgresql/data
     logging:
-      driver: 'json-file'
+      driver: "json-file"
       options:
-        max-file: '5'
-        max-size: '100m'
+        max-file: "5"
+        max-size: "100m"
+    networks:
+      - mnestix-network
+
+
+  basyx-configuration:
+    image: eclipsebasyx/basyxconfigurationservice-go:1.0.9
+    container_name: basyx-configuration
+    profiles: ['', 'basyx', 'tests']
+    environment:
+      - POSTGRES_HOST=basyx-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DBNAME=basyxdb
+      - POSTGRES_USER=basyx
+      - POSTGRES_PASSWORD=basyx
+    depends_on:
+      basyx-db:
+        condition: service_healthy
     networks:
       - mnestix-network
 
   aas-environment:
-    image: eclipsebasyx/aas-environment:2.0.0-milestone-06
+    image: eclipsebasyx/aasenvironment-go:1.0.9
     container_name: aas-environment
     profiles: ['', 'basyx', 'tests']
-    depends_on:
-      - mongodb
+    command: ["/app/aasenvironmentservice"]
     environment:
-      # MongoDb configuration for Basyx Repository
-      BASYX__BACKEND: MongoDB
-      SPRING__DATA__MONGODB__HOST: mongodb
-      SPRING__DATA__MONGODB__DATABASE: basyxdb
-      SPRING__DATA__MONGODB__authentication-database: admin
-      SPRING__DATA__MONGODB__USERNAME: mongoAdmin
-      SPRING__DATA__MONGODB__PASSWORD: mongoPassword
-      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 100000KB
-      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 100000KB
-      # Allow mnestix frontend and backend to call basyx
-      BASYX_CORS_ALLOWED-ORIGINS: '*'
-      BASYX_CORS_ALLOWED-METHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
-    healthcheck: # check the endpoint for a valid response (service ready)
-      test: curl -f http://localhost:8081/actuator/health
+      - SERVER_PORT=8081
+      - POSTGRES_HOST=basyx-db
+      - POSTGRES_PORT=5432
+      - POSTGRES_DBNAME=basyxdb
+      - POSTGRES_USER=basyx
+      - POSTGRES_PASSWORD=basyx
+      - CORS_ALLOWEDORIGINS=*
+      - CORS_ALLOWEDMETHODS=GET,POST,PUT,PATCH,DELETE,OPTIONS
+      - CORS_ALLOWEDHEADERS=*
+      - CORS_ALLOWEDCREDENTIALS=true
+      - ABAC_ENABLED=false
+      - GENERAL_AASREGISTRYINTEGRATION=true
+      - GENERAL_DISCOVERYINTEGRATION=true
+      - GENERAL_SUBMODELREGISTRYINTEGRATION=true
+      - GENERAL_EXTERNALURL=http://mnestix-proxy:5065/repo
+    depends_on:
+      basyx-configuration:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "/bin/healthprobe"]
       interval: 10s
-      timeout: 10s
-      retries: 6
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
     logging:
-      driver: 'json-file'
+      driver: "json-file"
       options:
-        max-file: '5'
-        max-size: '100m'
+        max-file: "5"
+        max-size: "100m"
     networks:
       - mnestix-network
 
-  aas-discovery:
-    image: eclipsebasyx/aas-discovery:2.0.0-milestone-06
-    container_name: aas-discovery
-    profiles: ['', 'basyx', 'tests']
-    depends_on:
-      - mongodb
-    environment:
-      BASYX__BACKEND: MongoDB
-      SPRING__DATA__MONGODB__HOST: mongodb
-      SPRING__DATA__MONGODB__DATABASE: basyxdb
-      SPRING__DATA__MONGODB__authentication-database: admin
-      SPRING__DATA__MONGODB__USERNAME: mongoAdmin
-      SPRING__DATA__MONGODB__PASSWORD: mongoPassword
-      BASYX__CORS__ALLOWED-ORIGINS: '*'
-      BASYX__CORS__ALLOWED-METHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
-    healthcheck: # check the endpoint for a valid response (service ready)
-      test: curl -f http://localhost:8081/actuator/health
-      interval: 30s
-      timeout: 10s
-      retries: 6
-    logging:
-      driver: 'json-file'
-      options:
-        max-file: '5'
-        max-size: '100m'
-    networks:
-      - mnestix-network
-
-  aas-registry:
-    image: eclipsebasyx/aas-registry-log-mongodb:2.0.0-milestone-06
-    container_name: aas-registry
-    profiles: ['', 'basyx']
-    depends_on:
-      - mongodb
-    environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongoAdmin:mongoPassword@mongodb:27017/?authSource=admin
-      BASYX__CORS__ALLOWED-ORIGINS: '*'
-      BASYX__CORS__ALLOWED-METHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
-    healthcheck: # check the endpoint for a valid response (service ready)
-      test: curl -f http://localhost:8080/actuator/health
-      interval: 30s
-      timeout: 10s
-      retries: 6
-    networks:
-      - mnestix-network
-
-  submodel-registry:
-    image: eclipsebasyx/submodel-registry-log-mongodb:2.0.0-milestone-06
-    container_name: submodel-registry
-    profiles: ['', 'basyx']
-    depends_on:
-      - mongodb
-    environment:
-      SPRING_DATA_MONGODB_URI: mongodb://mongoAdmin:mongoPassword@mongodb:27017/?authSource=admin
-      BASYX__CORS__ALLOWED-ORIGINS: '*'
-      BASYX__CORS__ALLOWED-METHODS: GET,POST,PATCH,DELETE,PUT,OPTIONS,HEAD
-    healthcheck: # check the endpoint for a valid response (service ready)
-      test: curl -f http://localhost:8080/actuator/health
-      interval: 10s
-      timeout: 10s
-      retries: 6
-    networks:
-      - mnestix-network
+volumes:
+  basyx-db-data:
