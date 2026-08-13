@@ -14,6 +14,7 @@ Defines the API key required for custom endpoint security.
 ### Features
 - `AllowRetrievingAllShellsAndSubmodels`: Enables retrieval of all shells and submodels.
 - `AasDiscoveryMiddleware`: Enables AAS discovery middleware.
+- `AasRegistryMiddleware`: Enables AAS registry middleware.
 
 ---
 
@@ -23,7 +24,7 @@ Defines the API key required for custom endpoint security.
 
 Defines how incoming requests are matched and routed to clusters:
 
-- **MnestixApiRoute** - This is connection to Mnestix API (Templates)
+- **MnestixApiRoute** - This is the connection to the Mnestix AAS Generator (Templates).
   - Path: `api/{**catch-all}`
   - Cluster: `mnestixApiCluster`
   - Authorization: `customApiKeyToModifyValuesPolicy`
@@ -74,7 +75,7 @@ Defines how incoming requests are matched and routed to clusters:
 
 Defines backend destinations for each route:
 
-- **mnestixApiCluster**: `http://localhost:5064/`
+- **mnestixApiCluster**: `http://localhost:5064/` (Mnestix AAS Generator)
 - **aasRepoCluster**: `http://localhost:8081/`
 - **submodelRepoCluster**: `http://localhost:8081/`
 - **conceptDescriptionRepoCluster**: `http://localhost:8081/`

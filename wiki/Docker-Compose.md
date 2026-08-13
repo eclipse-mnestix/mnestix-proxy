@@ -1,13 +1,13 @@
 # Docker Compose Setup for mnestix-proxy
 
-This guide explains how to use Docker Compose to run the full Mnestix Proxy stack, including the proxy, API, AAS environment, discovery, registry, and MongoDB.
+This guide explains how to use Docker Compose to run the full Mnestix Proxy stack, including the proxy, the AAS Generator, and the Eclipse BaSyx AAS environment backed by PostgreSQL.
 
 ---
 
 ## Compose Files
 
 - **compose.yml**: For production or standard usage. Uses pre-built images.
-- **compose.dev.yml**: For development. Builds the `mnestix-proxy` image from your local source.
+- **compose.dev.yml**: For development. Builds the `mnestix-proxy` image from your local `Dockerfile` and publishes the backend service ports to the host.
 
 ---
 
@@ -38,19 +38,25 @@ To build and run the proxy from your local source (using `compose.dev.yml`):
 docker compose -f compose.yml -f compose.dev.yml up --build
 ```
 
-This will build the `mnestix-proxy` image from your local Dockerfile and start all services. The development compose file also exposes all service ports for easier debugging.
+This builds the `mnestix-proxy` image from your local `Dockerfile` and starts all services. The development compose file also publishes the backend service ports (`mnestix-aas-generator` on `5064`, `aas-environment` on `8081`, `basyx-db` on `5432`) to the host for easier debugging.
+
+### Profiles
+
+The BaSyx backend services (`basyx-db`, `basyx-configuration`, `aas-environment`) are grouped under Compose profiles: `basyx` and `tests` (and the default profile). Select a profile with:
+
+```sh
+docker compose --profile basyx up
+```
 
 ---
 
 ## Services Overview
 
-- **mnestix-proxy**: Main reverse proxy gateway (`5065:5065`)
-- **mnestix-api**: Backend API service (`5064:5064`)
-- **mongodb**: MongoDB database for AAS and discovery services (`27017:27017`)
-- **aas-environment**: Eclipse BaSyx AAS environment (repository) (`8081:8081`)
-- **aas-discovery**: Eclipse BaSyx AAS discovery service (`8082:8081`)
-- **aas-registry**: Eclipse BaSyx AAS registry (`8083:8080`)
-- **submodel-registry**: Eclipse BaSyx submodel registry (`8084:8080`)
+- **mnestix-proxy**: Main reverse proxy gateway (`5065:5065`, image `mnestix/mnestix-proxy`)
+- **mnestix-aas-generator**: AAS Generator service, listens on `5064` internally (image `mnestix/mnestix-aas-generator`)
+- **basyx-db**: PostgreSQL database backing the AAS environment (image `postgres:16-alpine`)
+- **basyx-configuration**: Eclipse BaSyx configuration service (runs once to initialise the database)
+- **aas-environment**: Eclipse BaSyx AAS environment on `8081`, serving the AAS repository, discovery, AAS registry and submodel registry (image `eclipsebasyx/aasenvironment-go`)
 
 All services are connected via the `mnestix-network` Docker network.
 
@@ -58,22 +64,29 @@ All services are connected via the `mnestix-network` Docker network.
 
 ## Accessing Services
 
+With the standard setup, only the proxy port is published to the host:
+
 - **Proxy**: [http://localhost:5065](http://localhost:5065)
-- **API**: [http://localhost:5064](http://localhost:5064)
+
+The proxy forwards to the backend services on the internal Docker network, e.g.:
+
+- **AAS Generator**: `http://mnestix-aas-generator:5064/`
+- **AAS Environment (repo / discovery / registries)**: `http://aas-environment:8081/`
+
+With the development setup (`compose.dev.yml`), the backend ports are also published to the host:
+
+- **AAS Generator**: [http://localhost:5064](http://localhost:5064)
 - **AAS Environment**: [http://localhost:8081](http://localhost:8081)
-- **AAS Discovery**: [http://localhost:8082](http://localhost:8082)
-- **AAS Registry**: [http://localhost:8083](http://localhost:8083)
-- **Submodel Registry**: [http://localhost:8084](http://localhost:8084)
-- **MongoDB**: [localhost:27017](http://localhost:27017)
+- **PostgreSQL (basyx-db)**: `localhost:5432`
 
 ---
 
 ## Environment Variables
 
 You can override default settings using environment variables, e.g.:
-- `MNESTIX_BACKEND_API_KEY`: API key for secured endpoints
+- `MNESTIX_BACKEND_API_KEY`: API key for secured endpoints (defaults to `verySecureApiKey`)
 
-See `compose.yml` and `compose.dev.yml` for all configurable variables.
+Cluster destinations are also set via environment variables on the `mnestix-proxy` service, e.g. `ReverseProxy__Clusters__mnestixApiCluster__Destinations__destination1__Address`. See `compose.yml` for all configurable variables.
 
 ---
 
@@ -85,12 +98,18 @@ To stop and remove all containers:
 docker compose down
 ```
 
+To also remove the database volume:
+
+```sh
+docker compose down -v
+```
+
 ---
 
 ## Troubleshooting
 
 - View logs: `docker compose logs`
-- Check health status: Services use health checks to ensure readiness.
+- Check health status: `aas-environment` and `basyx-db` define health checks to ensure readiness.
 - Make sure required ports are available and not blocked.
 
 ---
