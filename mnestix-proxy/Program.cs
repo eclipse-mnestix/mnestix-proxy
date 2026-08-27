@@ -24,7 +24,7 @@ namespace mnestix_proxy
             // Registry Client settings
             builder.Services.AddTransient<IRegistryClient, RegistryClient>();
             builder.Services.Configure<RegistryServiceOptions>(
-                builder.Configuration.GetSection(RegistryServiceOptions.Options));
+            builder.Configuration.GetSection(RegistryServiceOptions.Options));
 
             builder.Services.AddAuthenticationServices(builder.Configuration);
 

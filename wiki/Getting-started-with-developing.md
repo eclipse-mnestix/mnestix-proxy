@@ -50,7 +50,7 @@ The main source code is located in the `mnestix-proxy` folder. Key directories a
 - Build and run the project using Docker:
   ```sh
   docker build -t mnestix-proxy .
-  docker run -p 5065:5065 mnestix-proxy
+  docker run -p 8080:8080 mnestix-proxy
   ```
 - See `.dockerignore` and `compose.yml` for details, or use `docker compose up` to run the full stack.
 
