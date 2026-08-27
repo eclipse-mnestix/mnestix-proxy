@@ -4,7 +4,7 @@
 
 Before you start developing with **mnestix-proxy**, ensure you have the following installed:
 
-- **.NET 8 SDK** (required for building and running the project)
+- **.NET 10 SDK** (required for building and running the project)
 - **Git** (for version control)
 - **Docker** (optional, for containerized development and testing)
 
@@ -30,7 +30,7 @@ The main source code is located in the `mnestix-proxy` folder. Key directories a
    ```
 
 2. **Install dependencies:**
-   - Make sure you have the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) installed.
+   - Make sure you have the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) installed.
 
 3. **Configure environment variables:**
    - Update `appsettings.Development.json` or `appsettings.json` as needed for your environment.
@@ -50,9 +50,9 @@ The main source code is located in the `mnestix-proxy` folder. Key directories a
 - Build and run the project using Docker:
   ```sh
   docker build -t mnestix-proxy .
-  docker run -p 5000:5000 mnestix-proxy
+  docker run -p 8080:8080 mnestix-proxy
   ```
-- See `.dockerignore` and `docker-compose.yml` (if present) for details.
+- See `.dockerignore` and `compose.yml` for details, or use `docker compose up` to run the full stack.
 
 ## Additional Notes
 
@@ -61,7 +61,7 @@ The main source code is located in the `mnestix-proxy` folder. Key directories a
 
 ## Useful Links
 
-- [.NET 8 SDK Download](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK Download](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [JetBrains Rider](https://www.jetbrains.com/rider/)
 - [Git Download](https://git-scm.com/)
