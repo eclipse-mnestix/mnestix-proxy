@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using mnestix_proxy.Authentication;
 using mnestix_proxy.Authentication.ApiKeyAuthentication;
 using mnestix_proxy.Authentication.ApiKeyAuthorization;
@@ -31,8 +32,11 @@ namespace mnestix_proxy
             // Adds authorization handler
             builder.Services.AddScoped<IAuthorizationHandler, ApiKeyRequirementHandler>();
 
-            builder.Services.Configure<CustomerEndpointsSecurityOptions>(
-                builder.Configuration.GetSection(CustomerEndpointsSecurityOptions.CustomerEndpointsSecurity));
+            builder.Services.AddOptions<CustomerEndpointsSecurityOptions>()
+                .Bind(builder.Configuration.GetSection(CustomerEndpointsSecurityOptions.CustomerEndpointsSecurity))
+                .ValidateOnStart();
+            builder.Services.AddSingleton<IValidateOptions<CustomerEndpointsSecurityOptions>,
+                CustomerEndpointsSecurityOptionsValidation>();
 
             builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("customApiKeyToModifyValuesPolicy", policyBuilder => policyBuilder
