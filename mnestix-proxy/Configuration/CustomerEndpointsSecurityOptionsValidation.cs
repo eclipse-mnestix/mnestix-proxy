@@ -37,11 +37,10 @@ public class CustomerEndpointsSecurityOptionsValidation : IValidateOptions<Custo
                  options.ApiKey.Equals(PreviouslyShippedDefaultApiKey, StringComparison.OrdinalIgnoreCase))
         {
             _logger.LogCritical(
-                "CustomerEndpointsSecurity:ApiKey is set to the publicly-known default value '{ApiKey}'. "
+                "CustomerEndpointsSecurity:ApiKey is set to the publicly-known default value. "
                 + "This grants anyone who knows it write/delete access to all proxied repositories. Generate your "
                 + "own secret and override it via the CustomerEndpointsSecurity__ApiKey environment variable before "
-                + "deploying.",
-                options.ApiKey);
+                + "deploying.");
         }
 
         return ValidateOptionsResult.Success;
