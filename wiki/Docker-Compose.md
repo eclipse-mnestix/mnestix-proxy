@@ -71,7 +71,15 @@ All services are connected via the `mnestix-network` Docker network.
 ## Environment Variables
 
 You can override default settings using environment variables, e.g.:
-- `MNESTIX_BACKEND_API_KEY`: API key for secured endpoints
+- `MNESTIX_BACKEND_API_KEY`: API key for secured endpoints (defaults to `verySecureApiKey`)
+
+> **⚠️ SECURITY WARNING — CHANGE THE API KEY BEFORE DEPLOYING.** The default `verySecureApiKey` is a well-known
+> placeholder. Deploying with it lets anyone who knows the value issue write/delete requests against every proxied
+> repository. The proxy logs a **critical warning** at startup when the key is empty or a known default. Set a
+> strong secret, e.g.:
+> ```bash
+> export MNESTIX_BACKEND_API_KEY='generate-a-long-random-secret-here'
+> ```
 
 See `compose.yml` and `compose.dev.yml` for all configurable variables.
 
