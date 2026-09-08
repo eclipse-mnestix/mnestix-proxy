@@ -12,7 +12,7 @@ Defines the API key required for custom endpoint security.
 - If both are enabled, OpenID takes precedence.
 
 ### Features
-- `AllowRetrievingAllShellsAndSubmodels`: Enables retrieval of all shells and submodels.
+- `AllowRetrievingAllShellsAndSubmodels`: Enables retrieval of all shells and submodels. When set to `false`, `GET` on `/repo/shells`, `/repo/submodels`, `/registry/shell-descriptors` and `/registry/submodel-descriptors` is answered with `405 Method Not Allowed`. Requests for a single shell, submodel or descriptor by ID stay allowed.
 - `AasDiscoveryMiddleware`: Enables AAS discovery middleware.
 
 ---

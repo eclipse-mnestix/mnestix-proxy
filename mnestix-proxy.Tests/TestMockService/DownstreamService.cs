@@ -43,6 +43,16 @@ namespace mnestix_proxy.Tests.TestMockService
                                           context.Response.StatusCode = 200;
                                           await context.Response.WriteAsync("Submodel Repository Service called!");
                                       }
+                                      else if (path != null && path.StartsWith("/shell-descriptors"))
+                                      {
+                                          context.Response.StatusCode = 200;
+                                          await context.Response.WriteAsync("AAS Registry Service called!");
+                                      }
+                                      else if (path != null && path.StartsWith("/submodel-descriptors"))
+                                      {
+                                          context.Response.StatusCode = 200;
+                                          await context.Response.WriteAsync("Submodel Registry Service called!");
+                                      }
                                       else if (path != null && path.StartsWith("/discovery-test-endpoint"))
                                       {
                                           context.Response.StatusCode = 200;

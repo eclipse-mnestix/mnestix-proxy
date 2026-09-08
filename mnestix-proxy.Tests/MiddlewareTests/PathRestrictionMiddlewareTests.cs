@@ -24,6 +24,12 @@ namespace mnestix_proxy.Tests.MiddlewareTests
 
         [TestCase("/repo/shells")]
         [TestCase("/repo/submodels")]
+        [TestCase("/registry/shell-descriptors")]
+        [TestCase("/registry/submodel-descriptors")]
+        [TestCase("/repo/shells/")]
+        [TestCase("/registry/shell-descriptors/")]
+        [TestCase("/registry/submodel-descriptors/")]
+        [TestCase("/REGISTRY/Shell-Descriptors")]
         public async Task Should_Return_405_When_Middleware_Feature_Disabled(string path)
         {
             // Act
@@ -40,6 +46,9 @@ namespace mnestix_proxy.Tests.MiddlewareTests
 
         [TestCase("/repo/shells", "POST")]
         [TestCase("/repo/submodels/mockBase64EncodedSubmodelId", "GET")]
+        [TestCase("/registry/shell-descriptors", "POST")]
+        [TestCase("/registry/shell-descriptors/mockBase64EncodedAasId", "GET")]
+        [TestCase("/registry/submodel-descriptors/mockBase64EncodedSubmodelId", "GET")]
         public async Task Should_Not_Return_405_When_Middleware_Feature_Disabled(string path, string method)
         {
             // Act
