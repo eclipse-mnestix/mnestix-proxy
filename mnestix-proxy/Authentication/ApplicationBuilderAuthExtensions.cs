@@ -9,7 +9,8 @@ namespace mnestix_proxy.Authentication
             var openIdEnabled = configuration.GetSection("OpenId").GetValue("EnableOpenIdAuth", false);
             var azureAdEnabled = configuration.GetSection("AzureAd").GetValue("EnableAzureAdAuth", false);
 
-            if (openIdEnabled || azureAdEnabled) {
+            if (openIdEnabled || azureAdEnabled)
+            {
                 app.UseAuthentication();
                 app.UseAuthorization();
             }

@@ -50,7 +50,7 @@ public class ApiKeyRequirementHandler(
         }
 
         logger.LogWarning("Unauthorized access attempt to {Method}:{Path}",
-            _httpContextAccessor.HttpContext?.Request.Method, 
+            _httpContextAccessor.HttpContext?.Request.Method,
             _httpContextAccessor.HttpContext?.Request.Path);
         context.Fail(new AuthorizationFailureReason(this,
             "For all methods except 'GET' you need a valid X-API-KEY in your header."));
