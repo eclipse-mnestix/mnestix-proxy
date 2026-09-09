@@ -49,10 +49,16 @@ public class ApiKeyRequirementHandler(
             return;
         }
 
-        logger.LogWarning("Unauthorized access attempt to {Method}:{Path}",
-            _httpContextAccessor.HttpContext?.Request.Method, 
-            _httpContextAccessor.HttpContext?.Request.Path);
+        var sanitizedMethod = SanitizeForLog(_httpContextAccessor.HttpContext?.Request.Method);
+        var sanitizedPath = SanitizeForLog(_httpContextAccessor.HttpContext?.Request.Path.Value);
+
+        logger.LogWarning("Unauthorized access attempt to {Method}:{Path}", sanitizedMethod, sanitizedPath);
         context.Fail(new AuthorizationFailureReason(this,
             "For all methods except 'GET' you need a valid X-API-KEY in your header."));
+    }
+
+    private static string? SanitizeForLog(string? value)
+    {
+        return value?.Replace("\r", string.Empty).Replace("\n", string.Empty);
     }
 }
