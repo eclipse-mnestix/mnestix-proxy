@@ -26,6 +26,7 @@ namespace mnestix_proxy.Tests
                     { "ReverseProxy:Clusters:submodelRepoCluster:Destinations:destination1:Address", _downstreamUrl },
                     { "ReverseProxy:Clusters:discoveryCluster:Destinations:destination1:Address", _downstreamUrl },
                     { "ReverseProxy:Clusters:aasRegistryCluster:Destinations:destination1:Address", _downstreamUrl },
+                    { "ReverseProxy:Clusters:submodelRegistryCluster:Destinations:destination1:Address", _downstreamUrl },
                 };
 
                 if (_customSettings != null)
