@@ -15,7 +15,9 @@ services:
       - ReverseProxy__Clusters__mnestixApiCluster__Destinations__destination1__Address=http://mnestix-aas-generator:5064/
       - ReverseProxy__Clusters__aasRepoCluster__Destinations__destination1__Address=http://aas-environment:8081/
       - ReverseProxy__Clusters__submodelRepoCluster__Destinations__destination1__Address=http://aas-environment:8081/
-      - ReverseProxy__Clusters__conceptDescriptionCluster__Destinations__destination1__Address=http://aas-environment:8081/
+      - ReverseProxy__Clusters__conceptDescriptionRepoCluster__Destinations__destination1__Address=http://aas-environment:8081/
+      - ReverseProxy__Clusters__aasRegistryCluster__Destinations__destination1__Address=http://aas-environment:8081/
+      - ReverseProxy__Clusters__submodelRegistryCluster__Destinations__destination1__Address=http://aas-environment:8081/
       - ReverseProxy__Clusters__discoveryCluster__Destinations__destination1__Address=http://aas-environment:8081/
       - ReverseProxy__Clusters__influxCluster__Destinations__destination1__Address=http://example/
       - ReverseProxy__Routes__InfluxRoute__Transforms__1__Set=Token 
