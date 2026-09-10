@@ -28,7 +28,7 @@ services:
       - mnestix-network
 
   mnestix-aas-generator:
-    image: mnestix/mnestix-aas-generator:1.4.0
+    image: mnestix/mnestix-aas-generator:1.5.0
     container_name: mnestix-aas-generator
     environment:
       - ASPNETCORE_URLS=http://+:5064
@@ -76,7 +76,7 @@ services:
 
 
   basyx-configuration:
-    image: eclipsebasyx/basyxconfigurationservice-go:1.0.9
+    image: eclipsebasyx/basyxconfigurationservice-go:1.0.11
     container_name: basyx-configuration
     profiles: ['', 'basyx', 'tests']
     environment:
@@ -92,7 +92,7 @@ services:
       - mnestix-network
 
   aas-environment:
-    image: eclipsebasyx/aasenvironment-go:1.0.9
+    image: eclipsebasyx/aasenvironment-go:1.0.11
     container_name: aas-environment
     profiles: ['', 'basyx', 'tests']
     command: ["/app/aasenvironmentservice"]
