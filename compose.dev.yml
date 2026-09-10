@@ -12,7 +12,7 @@ services:
     ports:
       - '5065:5065'
 
-  mnestix-api:
+  mnestix-aas-generator:
     ports:
       - '5064:5064'
 
@@ -20,18 +20,6 @@ services:
     ports:
       - '8081:8081'
 
-  mongodb:
+  basyx-db:
     ports:
-      - '27017:27017'
-
-  aas-discovery:
-    ports:
-      - '8082:8081'
-
-  aas-registry:
-    ports:
-      - '8083:8080'
-
-  submodel-registry:
-    ports:
-      - '8084:8080'
+      - '5432:5432'

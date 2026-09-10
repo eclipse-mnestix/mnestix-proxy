@@ -11,7 +11,7 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: mnestix-proxy
   # Update the version manually
-  IMAGE_TAG_VERSION: 1.0.1
+  IMAGE_TAG_VERSION: 1.1.0
 
 jobs:
   run-tests:
@@ -27,7 +27,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '8.0.x'
+          dotnet-version: '10.0.x'
 
       - name: Restore dependencies
         run: dotnet restore

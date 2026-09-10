@@ -21,6 +21,8 @@ namespace mnestix_proxy.Tests.MiddlewareTests
 
         [TestCase("/repo/shells")]
         [TestCase("/repo/submodels")]
+        [TestCase("/registry/shell-descriptors")]
+        [TestCase("/registry/submodel-descriptors")]
         public async Task Should_Return_200_When_Middleware_Feature_Enabled(string path)
         {
             // Act

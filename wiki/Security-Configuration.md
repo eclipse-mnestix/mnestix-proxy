@@ -2,6 +2,32 @@
 
 This document describes the available security configuration options for the mnestix-proxy project, focusing on integration with **Keycloak** and **Azure Entra ID**.
 
+## API Key (Custom Endpoint Security)
+
+The proxy protects modifying requests (POST, PUT, PATCH, DELETE) with an API key supplied via the `X-API-KEY`
+header. GET/HEAD/OPTIONS requests do not require a key.
+
+> **⚠️ SECURITY WARNING — CHANGE THE API KEY BEFORE DEPLOYING**
+>
+> The API key is **no longer set** in `appsettings.json` (it ships empty) so that no predictable secret is
+> committed to the repository. The development Docker Compose file defaults to the well-known placeholder
+> `verySecureApiKey`. **Do not deploy with an empty key or this placeholder** — anyone who knows the value can
+> issue write/delete requests against every proxied repository (AAS shells, submodels, discovery, and the Mnestix
+> API), which run without authentication of their own.
+>
+> At startup the application logs a **critical warning** whenever the key is empty or equals a known default.
+>
+> Set your own secret via the `CustomerEndpointsSecurity__ApiKey` environment variable (recommended), or configure
+> the `CustomerEndpointsSecurity` section in `appsettings.json`:
+>
+> ```bash
+> # Linux / macOS / Docker Compose
+> export CustomerEndpointsSecurity__ApiKey='generate-a-long-random-secret-here'
+>
+> # Windows PowerShell
+> $env:CustomerEndpointsSecurity__ApiKey='generate-a-long-random-secret-here'
+> ```
+
 ## Keycloak
 
 Keycloak is an open-source identity and access management solution. To enable Keycloak authentication in mnestix-proxy:

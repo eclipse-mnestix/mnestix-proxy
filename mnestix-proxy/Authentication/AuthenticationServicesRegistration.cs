@@ -29,8 +29,8 @@ public static class AuthenticationServicesRegistration
             var issuer = openIdSection.GetValue<string>("Issuer");
             var clientId = openIdSection.GetValue<string>("ClientId");
             var requireHttps = openIdSection.GetValue<bool>("RequireHttpsMetadata");
-            // Configuration for Mnestix-Api Authentication
-            // This section sets up the authentication services for the Mnestix API,
+            // Configuration for Mnestix Proxy Authentication
+            // This section sets up the authentication services for the Mnestix Proxy,
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,7 +56,8 @@ public static class AuthenticationServicesRegistration
             // Adds Microsoft Identity platform (AAD v2.0) support to protect this Api
             services.AddMicrosoftIdentityWebApiAuthentication(configuration);
         }
-        else {
+        else
+        {
             services.AddSingleton<IAuthorizationMiddlewareResultHandler, CustomAuthorizationMiddlewareResultHandler>();
         }
     }

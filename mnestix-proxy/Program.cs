@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Options;
 using mnestix_proxy.Authentication;
 using mnestix_proxy.Authentication.ApiKeyAuthentication;
 using mnestix_proxy.Authentication.ApiKeyAuthorization;
@@ -21,13 +22,21 @@ namespace mnestix_proxy
             builder.Services.Configure<DiscoveryServiceOptions>(
                 builder.Configuration.GetSection(DiscoveryServiceOptions.Options));
 
+            // Registry Client settings
+            builder.Services.AddTransient<IRegistryClient, RegistryClient>();
+            builder.Services.Configure<RegistryServiceOptions>(
+                builder.Configuration.GetSection(RegistryServiceOptions.Options));
+
             builder.Services.AddAuthenticationServices(builder.Configuration);
 
             // Adds authorization handler
             builder.Services.AddScoped<IAuthorizationHandler, ApiKeyRequirementHandler>();
 
-            builder.Services.Configure<CustomerEndpointsSecurityOptions>(
-                builder.Configuration.GetSection(CustomerEndpointsSecurityOptions.CustomerEndpointsSecurity));
+            builder.Services.AddOptions<CustomerEndpointsSecurityOptions>()
+                .Bind(builder.Configuration.GetSection(CustomerEndpointsSecurityOptions.CustomerEndpointsSecurity))
+                .ValidateOnStart();
+            builder.Services.AddSingleton<IValidateOptions<CustomerEndpointsSecurityOptions>,
+                CustomerEndpointsSecurityOptionsValidation>();
 
             builder.Services.AddAuthorizationBuilder()
                 .AddPolicy("customApiKeyToModifyValuesPolicy", policyBuilder => policyBuilder
@@ -64,12 +73,20 @@ namespace mnestix_proxy
                     proxyPipeline.Use(PathRestrictionMiddleware.PathRestrictionHandling());
                 }
 
-                // AAS registry
+                // AAS Discovery
                 _ = bool.TryParse(builder.Configuration["Features:AasDiscoveryMiddleware"],
+                    out var aasDiscoveryMiddleware);
+                if (aasDiscoveryMiddleware)
+                {
+                    proxyPipeline.Use(AasDiscoveryServiceMiddleware.ConfigureAasDiscoveryHandling());
+                }
+
+                // AAS Registry
+                _ = bool.TryParse(builder.Configuration["Features:AasRegistryMiddleware"],
                     out var aasRegistryMiddleware);
                 if (aasRegistryMiddleware)
                 {
-                    proxyPipeline.Use(AasDiscoveryServiceMiddleware.ConfigureAasDiscoveryHandling());
+                    proxyPipeline.Use(AasRegistryServiceMiddleware.ConfigureAasRegistryHandling());
                 }
 
                 // MQTT Eventing
