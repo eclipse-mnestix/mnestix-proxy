@@ -85,6 +85,7 @@ With the development setup (`compose.dev.yml`), the backend ports are also publi
 
 You can override default settings using environment variables, e.g.:
 - `MNESTIX_BACKEND_API_KEY`: API key for secured endpoints (defaults to `verySecureApiKey`)
+- `ReverseProxy__Routes__InfluxRoute__Transforms__1__Set`: InfluxDB token for the `influx` route, as `Token <your-token>`. Compose leaves it empty, so the route is disabled by default. To enable it, also point `ReverseProxy__Clusters__influxCluster__Destinations__destination1__Address` at your InfluxDB instance.
 
 > **⚠️ SECURITY WARNING — CHANGE THE API KEY BEFORE DEPLOYING.** The default `verySecureApiKey` is a well-known
 > placeholder. Deploying with it lets anyone who knows the value issue write/delete requests against every proxied

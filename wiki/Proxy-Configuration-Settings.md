@@ -69,7 +69,7 @@ Defines how incoming requests are matched and routed to clusters:
   - Path: `influx/{**catch-all}`
   - Cluster: `influxCluster`
   - CORS Policy: `allowAnything`
-  - Transforms: Path pattern and sets Authorization header for InfluxDB
+  - Transforms: Path pattern and sets the Authorization header for InfluxDB. The repository ships only a placeholder; set your token at runtime via `ReverseProxy__Routes__InfluxRoute__Transforms__1__Set` with the value `Token <your-influxdb-token>` (see [Security Configuration](Security-Configuration.md)).
 
 ### Clusters
 
@@ -82,7 +82,7 @@ Defines backend destinations for each route:
 - **aasRegistryCluster**: `http://localhost:8081/`
 - **submodelRegistryCluster**: `http://localhost:8081/`
 - **discoveryCluster**: `http://localhost:8082/`
-- **influxCluster**: `http://<your-domain>:<port>`
+- **influxCluster**: `http://localhost:8086/` (placeholder; point it at your InfluxDB instance)
 
 ---
 
@@ -90,7 +90,7 @@ Defines backend destinations for each route:
 
 - API key required for modifying values via custom policy.
 - CORS headers are set for certain routes to allow cross-origin requests.
-- InfluxDB route sets a specific Authorization token.
+- The InfluxDB route attaches a token you supply at runtime; the repository ships none (see [Security Configuration](Security-Configuration.md)).
 
 ---
 
