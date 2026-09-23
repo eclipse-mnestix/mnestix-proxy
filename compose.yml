@@ -20,7 +20,6 @@ services:
       - ReverseProxy__Clusters__discoveryCluster__Destinations__destination1__Address=http://aas-environment:8081/
       - ReverseProxy__Clusters__influxCluster__Destinations__destination1__Address=http://example/
       - ReverseProxy__Routes__InfluxRoute__Transforms__1__Set=Token 
-      - Features__AllowRetrievingAllShellsAndSubmodels=false
     depends_on:
       aas-environment:
         condition: service_healthy

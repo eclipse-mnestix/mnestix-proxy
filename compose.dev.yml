@@ -5,7 +5,6 @@
 
 services:
   mnestix-proxy:
-    container_name: mnestix-proxy
     image: mnestix-proxy:dev
     build:
       dockerfile: Dockerfile
