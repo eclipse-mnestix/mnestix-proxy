@@ -12,7 +12,7 @@ Defines the API key required for custom endpoint security.
 - If both are enabled, OpenID takes precedence.
 
 ### Features
-- `AllowRetrievingAllShellsAndSubmodels`: Enables retrieval of all shells and submodels. When set to `false`, `GET` on `/repo/shells`, `/repo/submodels`, `/registry/shell-descriptors` and `/registry/submodel-descriptors` is answered with `405 Method Not Allowed`. Requests for a single shell, submodel or descriptor by ID stay allowed.
+- `AllowRetrievingAllShellsAndSubmodels`: Enables retrieval of all shells and submodels. When set to `false`, `GET` and `HEAD` on `/repo/shells`, `/repo/submodels`, `/registry/shell-descriptors` and `/registry/submodel-descriptors` are answered with `405 Method Not Allowed`. Requests for a single shell, submodel or descriptor by ID stay allowed. The proxy normalizes the path before it checks, so extra slashes, `.` and `..` segments, and percent-encoded characters cannot bypass the restriction.
 - `AasDiscoveryMiddleware`: Enables AAS discovery middleware.
 - `AasRegistryMiddleware`: Enables AAS registry middleware, default `true`. While enabled, every `PUT`, `POST` and `DELETE` on `/repo/...` also registers, updates or deletes the matching shell descriptor in the AAS Registry. The registry address is taken from the `aasRegistryCluster` destination. Failed registry calls are only logged, they do not fail the repository request.
 
@@ -69,7 +69,7 @@ Defines how incoming requests are matched and routed to clusters:
   - Path: `influx/{**catch-all}`
   - Cluster: `influxCluster`
   - CORS Policy: `allowAnything`
-  - Transforms: Path pattern and sets Authorization header for InfluxDB
+  - Transforms: Path pattern and sets the Authorization header for InfluxDB. The repository ships only a placeholder; set your token at runtime via `ReverseProxy__Routes__InfluxRoute__Transforms__1__Set` with the value `Token <your-influxdb-token>` (see [Security Configuration](Security-Configuration.md)).
 
 ### Clusters
 
@@ -82,7 +82,7 @@ Defines backend destinations for each route:
 - **aasRegistryCluster**: `http://localhost:8081/`
 - **submodelRegistryCluster**: `http://localhost:8081/`
 - **discoveryCluster**: `http://localhost:8082/`
-- **influxCluster**: `http://<your-domain>:<port>`
+- **influxCluster**: `http://localhost:8086/` (placeholder; point it at your InfluxDB instance)
 
 ---
 
@@ -90,7 +90,7 @@ Defines backend destinations for each route:
 
 - API key required for modifying values via custom policy.
 - CORS headers are set for certain routes to allow cross-origin requests.
-- InfluxDB route sets a specific Authorization token.
+- The InfluxDB route attaches a token you supply at runtime; the repository ships none (see [Security Configuration](Security-Configuration.md)).
 
 ---
 

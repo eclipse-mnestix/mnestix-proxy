@@ -5,7 +5,6 @@
 
 services:
   mnestix-proxy:
-    container_name: mnestix-proxy
     image: mnestix/mnestix-proxy:1.1.0
     ports:
       - "5065:5065"
@@ -29,7 +28,6 @@ services:
 
   mnestix-aas-generator:
     image: mnestix/mnestix-aas-generator:1.5.0
-    container_name: mnestix-aas-generator
     environment:
       - ASPNETCORE_URLS=http://+:5064
       - CustomerEndpointsSecurity__ApiKey=${MNESTIX_BACKEND_API_KEY:-verySecureApiKey}
@@ -53,7 +51,6 @@ services:
 
   basyx-db:
     image: postgres:16-alpine
-    container_name: basyx-db
     profiles: ['', 'basyx', 'tests']
     environment:
       - POSTGRES_USER=basyx
@@ -77,7 +74,6 @@ services:
 
   basyx-configuration:
     image: eclipsebasyx/basyxconfigurationservice-go:1.0.11
-    container_name: basyx-configuration
     profiles: ['', 'basyx', 'tests']
     environment:
       - POSTGRES_HOST=basyx-db
@@ -93,7 +89,6 @@ services:
 
   aas-environment:
     image: eclipsebasyx/aasenvironment-go:1.0.11
-    container_name: aas-environment
     profiles: ['', 'basyx', 'tests']
     command: ["/app/aasenvironmentservice"]
     environment:
