@@ -30,6 +30,16 @@ namespace mnestix_proxy.Tests.MiddlewareTests
         [TestCase("/registry/shell-descriptors/")]
         [TestCase("/registry/submodel-descriptors/")]
         [TestCase("/REGISTRY/Shell-Descriptors")]
+        [TestCase("/repo//shells")]
+        [TestCase("/repo//submodels")]
+        [TestCase("/repo///shells")]
+        [TestCase("/repo/submodels/")]
+        [TestCase("/repo/%2e/shells")]
+        [TestCase("/repo/submodels/%2e%2e/shells")]
+        [TestCase("/repo/%252e/shells")]
+        [TestCase("/repo/submodels/%252e%252e/shells")]
+        [TestCase("/repo/shell-descriptors")]
+        [TestCase("/repo/submodel-descriptors")]
         public async Task Should_Return_405_When_Middleware_Feature_Disabled(string path)
         {
             // Act
@@ -49,6 +59,8 @@ namespace mnestix_proxy.Tests.MiddlewareTests
         [TestCase("/registry/shell-descriptors", "POST")]
         [TestCase("/registry/shell-descriptors/mockBase64EncodedAasId", "GET")]
         [TestCase("/registry/submodel-descriptors/mockBase64EncodedSubmodelId", "GET")]
+        [TestCase("/repo/submodels/abc//def", "GET")]
+        [TestCase("/repo/shells/aGVsbG8/", "GET")]
         public async Task Should_Forward_Request_When_Middleware_Feature_Disabled(string path, string method)
         {
             // Act
@@ -60,6 +72,19 @@ namespace mnestix_proxy.Tests.MiddlewareTests
 
             // Assert
             Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [TestCase("/repo/shells")]
+        [TestCase("/repo//shells")]
+        public async Task Should_Return_405_For_Head_Requests_When_Middleware_Feature_Disabled(string path)
+        {
+            // Act
+            var request = new HttpRequestMessage(HttpMethod.Head, path);
+            request.Headers.Add("X-API-KEY", "verySecureApiKeyMock");
+            var response = await _httpClient.SendAsync(request);
+
+            // Assert
+            Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.MethodNotAllowed));
         }
 
         [OneTimeTearDown]

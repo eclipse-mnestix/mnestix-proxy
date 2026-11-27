@@ -28,6 +28,27 @@ header. GET/HEAD/OPTIONS requests do not require a key.
 > $env:CustomerEndpointsSecurity__ApiKey='generate-a-long-random-secret-here'
 > ```
 
+## InfluxDB Token
+
+The `InfluxRoute` forwards requests to an InfluxDB instance and attaches the access token
+server-side, so the browser never sees it. `appsettings.json` ships only a placeholder — set your
+real token at runtime via the configuration override:
+
+```bash
+# Linux / macOS / Docker Compose
+export ReverseProxy__Routes__InfluxRoute__Transforms__1__Set='Token generate-a-long-random-token-here'
+
+# Windows PowerShell
+$env:ReverseProxy__Routes__InfluxRoute__Transforms__1__Set='Token generate-a-long-random-token-here'
+```
+
+> **⚠️ SECURITY WARNING — NEVER COMMIT A REAL TOKEN.** An InfluxDB token grants read/write access to
+> your time-series data. Earlier versions shipped a real token in `appsettings.json`; if you deployed
+> one, treat that token as compromised — revoke it in InfluxDB and set the replacement with the
+> variable above. The cluster address
+> `ReverseProxy__Clusters__influxCluster__Destinations__destination1__Address` defaults to a
+> localhost placeholder; point it at your InfluxDB instance.
+
 ## Keycloak
 
 Keycloak is an open-source identity and access management solution. To enable Keycloak authentication in mnestix-proxy:
